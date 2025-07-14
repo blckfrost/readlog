@@ -1,0 +1,40 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id       String @id @default(cuid())
+    username String @unique
+    password String
+    book     Book[]
+
+    @@map("users")
+}
+
+model Book {
+    id          String   @id @default(cuid())
+    title       String
+    author      String
+    type        BookType
+    isRead      Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    totalPage   Int?
+    currentPage Int?
+
+    User   User?   @relation(fields: [userId], references: [id])
+    userId String?
+
+    @@map("books")
+}
+
+enum BookType {
+    NOVEL
+    MANGA
+    LIGHT_NOVEL
+    COMIC
+}
