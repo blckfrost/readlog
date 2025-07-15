@@ -103,5 +103,25 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete Book
+router.delete(':id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const book = await prisma.book.findUnique({
+            where: { id },
+        });
+        if (!book || book.userId !== req.userId) {
+            return res.status(403).json({ error: 'Not authorized' });
+        }
+
+        await prisma.book.delete({
+            where: { id },
+        });
+
+        res.send({ message: 'Book deleted' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to delete book' });
+    }
+});
 
 export default router;
