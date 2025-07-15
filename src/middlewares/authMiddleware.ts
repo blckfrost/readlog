@@ -3,11 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-interface AuthenticatedRequest extends Request {
-    user?: string | JwtPayload;
-}
-
-export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
 
     if (!authHeader) {
@@ -19,14 +15,16 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
         return res.status(401).json({ message: 'Token missing' });
     }
 
-    try {
-        if (!JWT_SECRET) {
-            throw new Error('JWT_SECRET is not defined');
-        }
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(403).json({ message: 'Invalid token' });
+    if (!JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
     }
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid Token' });
+        }
+        const payload = decoded as JwtPayload;
+        req.user = payload;
+        req.userId = payload.id;
+        next();
+    });
 }

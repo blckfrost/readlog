@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import bookRoutes from '../src/routes/bookRoutes';
 import authRoutes from '../src/routes/authRoutes';
+import { authMiddleware } from './middlewares/authMiddleware';
 
 const PORT = process.env.PORT || 8080;
 
@@ -15,7 +16,7 @@ app.get('/', (req, res) => {
     console.log('Home / hit');
 });
 
-app.use('/books', bookRoutes);
+app.use('/books', authMiddleware, bookRoutes);
 app.use('/auth', authRoutes);
 
 app.listen(PORT, () => {
