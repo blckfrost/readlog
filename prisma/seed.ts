@@ -1,11 +1,15 @@
 import { PrismaClient } from './client';
+import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
+    const password = 'demo_password';
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
     const user = await prisma.user.create({
         data: {
             username: 'demo_user',
-            password: 'hashed_password',
+            password: hashedPassword,
             book: {
                 create: [
                     {
@@ -33,5 +37,5 @@ main()
         process.exit(1);
     })
     .finally(async () => {
-        await prisma.$disconnect;
+        await prisma.$disconnect();
     });
