@@ -1,0 +1,34 @@
+@USER_TOKEN = my_token_value
+
+# @name readlog
+
+
+### GET THE APP
+
+GET http://localhost:8080 HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+
+### CREATE A NEW USER
+
+POST http://localhost:8080/auth/register HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{USER_TOKEN}}
+
+
+### LOGIN A USER
+
+POST http://localhost:8080/auth/login HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{USER_TOKEN}}
+
+
+### CREATE A BOOK
+
+POST http://localhost:8080/books HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{USER_TOKEN}}
