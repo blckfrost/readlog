@@ -1,21 +1,22 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import prisma from '../utils/prisma';
+import prisma from '../lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const router = express.Router();
 
 // Create a user
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { password, email } = req.body;
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     try {
         const user = await prisma.user.create({
             data: {
-                username,
+                email: email,
                 password: hashedPassword,
+
                 book: {
                     create: {
                         title: 'Test Book',
@@ -39,12 +40,12 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     try {
         const user = await prisma.user.findUnique({
             where: {
-                username: username,
+                email: email,
             },
         });
         if (!user) {
